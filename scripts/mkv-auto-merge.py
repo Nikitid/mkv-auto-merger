@@ -82,6 +82,13 @@ def move_path(src: Path, dest: Path) -> Path:
     return safe_dest
 
 
+def copy_path(src: Path, dest: Path) -> Path:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    safe_dest = unique_path(dest)
+    shutil.copy2(src, safe_dest)
+    return safe_dest
+
+
 def normalized_name(value: str) -> str:
     return re.sub(r"[\s._-]+", " ", value.casefold()).strip()
 
@@ -128,7 +135,7 @@ def print_welcome() -> None:
     print("Что делает:")
     print("  1. Сканирует грязные папки раздач.")
     print("  2. Находит видео, озвучки разных студий и бонусы.")
-    print("  3. Собирает MKV без субтитров для Jellyfin.")
+    print("  3. Быстро переносит готовое или собирает MKV с озвучкой для Jellyfin.")
     print()
     print("Минимальная структура:")
     print("  Рабочая папка/")
@@ -147,7 +154,7 @@ def print_welcome() -> None:
     print("  Title/Season 00/Title - S00E01.mkv")
     print()
     print("Рекомендуемый порядок: 4) DRY RUN -> 1) MERGE -> 6) MOVE TO LIBRARY.")
-    print("Субтитры: внешние игнорируются, встроенные удаляются через mkvmerge.")
+    print("Без озвучки: быстрый move/rename без remux. С озвучкой: mkvmerge без субтитров.")
     print("=" * 60)
 
 
@@ -372,6 +379,16 @@ def process_plan(plan: EpisodePlan, keep_mode: str) -> str:
     if plan.video.episode is None:
         return f"WARN: no episode number, skipped {plan.video.path.name}"
 
+    if not plan.audios:
+        try:
+            if keep_mode == "keep":
+                out_file = copy_path(plan.video.path, plan.output_file)
+                return f"FAST COPY: {out_file.name}"
+            out_file = move_path(plan.video.path, plan.output_file)
+            return f"FAST MOVE: {out_file.name}"
+        except Exception as e:
+            return f"ERR: {plan.video.path.name}: {e}"
+
     try:
         subprocess.run(build_mkvmerge_command(plan), check=True, capture_output=True)
         if keep_mode == "delete":
@@ -424,10 +441,12 @@ def action_dry_run(root: Path) -> None:
         if plan.ignored_subtitles:
             print(
                 f"  subs:  ignored external x{len(plan.ignored_subtitles)}; "
-                "embedded will be stripped"
+                "embedded stripped only when remuxing"
             )
         else:
-            print("  subs:  embedded will be stripped")
+            print("  subs:  embedded stripped only when remuxing")
+        action = "REMUX" if plan.audios else "FAST MOVE/COPY"
+        print(f"  action: {action}")
 
 
 def action_delete_external_subtitles(root: Path) -> None:
@@ -541,9 +560,9 @@ def action_rename(root: Path) -> None:
 
 
 def action_merge(root: Path) -> None:
-    mode = input("Исходники: [k]eep / [d]elete / [m]ove: ").lower() or "k"
+    mode = input("Исходники: [m]ove / [k]eep / [d]elete [m]: ").lower() or "m"
     jobs = int(input("Потоков [2]: ") or "2")
-    keep_mode = {"k": "keep", "d": "delete", "m": "move"}.get(mode, "keep")
+    keep_mode = {"k": "keep", "d": "delete", "m": "move"}.get(mode, "move")
     plans = build_plans(root)
     tasks = []
 
