@@ -44,15 +44,16 @@ sudo apt-get install -y mkvtoolnix shellcheck shfmt python3 python3-venv
 
 ## Quick Use From GitHub
 
-Replace the URL with your repository URL after publishing:
+Clone and run in one line:
 
 ```bash
-git clone https://github.com/<user>/mkv-auto-merger.git
-cd mkv-auto-merger
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e '.[dev]'
-python scripts/mkv-auto-merge.py /path/to/work-folder
+git clone https://github.com/<user>/mkv-auto-merger.git && python3 mkv-auto-merger/scripts/mkv-auto-merge.py /path/to/work-folder
+```
+
+Run directly from the raw script URL:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/<user>/mkv-auto-merger/main/scripts/mkv-auto-merge.py -o /tmp/mkv-auto-merge.py && python3 /tmp/mkv-auto-merge.py /path/to/work-folder
 ```
 
 Inside the menu, use this order:
@@ -125,6 +126,8 @@ Work folder/
 Use `DRY RUN` before `MERGE`. It shows every video, matched audio tracks, ignored subtitles, and output path.
 
 ## Development
+
+The script itself has no Python runtime dependencies. Install dev tools only when you want to run tests and lint locally:
 
 ```bash
 python3 -m venv .venv

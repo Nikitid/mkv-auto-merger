@@ -34,6 +34,3 @@ build/
 # Node/tool caches occasionally created by editors or actions.
 node_modules/
 .cache/
-
-# Copier keeps update metadata in generated projects. Commit this file.
-!.copier-answers.yml
