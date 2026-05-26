@@ -22,8 +22,8 @@ main() {
     python3 -m pytest tests
   else
     log "pytest is not installed; running unittest and Python syntax smoke test"
-    PYTHONPATH="src${PYTHONPATH:+:${PYTHONPATH}}" python3 -m unittest discover -s tests
-    python3 -m compileall -q src tests
+    python3 -m unittest discover -s tests
+    python3 -m compileall -q scripts tests
   fi
 
 }

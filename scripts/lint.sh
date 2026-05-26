@@ -48,10 +48,10 @@ main() {
 
   if command -v python3 >/dev/null 2>&1; then
     log "checking Python syntax"
-    python3 -m compileall -q scripts src tests
+    python3 -m compileall -q scripts tests
     if python3 -m ruff --version >/dev/null 2>&1; then
       log "running ruff"
-      python3 -m ruff check scripts src tests
+      python3 -m ruff check scripts tests
     else
       log "ruff is not installed; skipping Python style lint"
     fi
