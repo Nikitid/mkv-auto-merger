@@ -1,0 +1,20 @@
+# Normalize text files to LF in the repository, independent of developer OS.
+* text=auto eol=lf
+
+# Keep scripts executable-friendly and consistently normalized.
+*.sh text eol=lf
+Makefile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# Binary files must not be line-ending normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary

@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "timonwong.shellcheck",
+    "mkhl.shfmt",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode-remote.remote-containers",
+    "ms-python.python"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.rulers": [
+    100
+  ],
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "shellcheck.enable": true,
+  "shellcheck.run": "onSave",
+  "shfmt.executablePath": "shfmt",
+  "shfmt.useEditorConfig": true,
+  "[shellscript]": {
+    "editor.defaultFormatter": "mkhl.shfmt"
+  },
+  "[python]": {
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
+}
