@@ -4,6 +4,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "mkv-auto-merge.py"
 
@@ -128,3 +129,43 @@ class MkvAutoMergeScriptTest(unittest.TestCase):
             self.assertEqual("old", (dest_season / "S01E01.mkv").read_text(encoding="utf-8"))
             self.assertEqual("new", (dest_season / "S01E01 (1).mkv").read_text(encoding="utf-8"))
             self.assertFalse((root / "Show").exists())
+
+    def test_process_plan_fast_moves_when_no_audio_is_needed(self) -> None:
+        with TemporaryDirectory() as tmp:
+            title_dir = Path(tmp) / "Show"
+            source_dir = title_dir / "Season 1"
+            source_dir.mkdir(parents=True)
+            video = source_dir / "01.mkv"
+            video.write_text("video", encoding="utf-8")
+            plan = self.script.build_episode_plan(
+                title_dir,
+                self.script.MediaRef(video, season=1, episode=1),
+            )
+
+            with patch.object(self.script.subprocess, "run") as subprocess_run:
+                result = self.script.process_plan(plan, "move")
+
+            subprocess_run.assert_not_called()
+            self.assertEqual("FAST MOVE: Show - S01E01.mkv", result)
+            self.assertFalse(video.exists())
+            self.assertEqual("video", plan.output_file.read_text(encoding="utf-8"))
+
+    def test_process_plan_fast_copies_when_keep_mode_is_requested(self) -> None:
+        with TemporaryDirectory() as tmp:
+            title_dir = Path(tmp) / "Show"
+            source_dir = title_dir / "Season 1"
+            source_dir.mkdir(parents=True)
+            video = source_dir / "01.mkv"
+            video.write_text("video", encoding="utf-8")
+            plan = self.script.build_episode_plan(
+                title_dir,
+                self.script.MediaRef(video, season=1, episode=1),
+            )
+
+            with patch.object(self.script.subprocess, "run") as subprocess_run:
+                result = self.script.process_plan(plan, "keep")
+
+            subprocess_run.assert_not_called()
+            self.assertEqual("FAST COPY: Show - S01E01.mkv", result)
+            self.assertTrue(video.exists())
+            self.assertEqual("video", plan.output_file.read_text(encoding="utf-8"))

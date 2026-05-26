@@ -2,7 +2,7 @@
 
 Prepare anime and TV series folders from trackers for Jellyfin.
 
-The script scans messy release folders, finds video files, matches external dubbed audio from one or more studios, strips subtitles, and writes a Jellyfin-friendly structure:
+The script scans messy release folders, finds video files, matches external dubbed audio from one or more studios, and writes a Jellyfin-friendly structure:
 
 ```text
 Title/
@@ -17,7 +17,8 @@ Title/
 - Recursive scan of tracker-style folders.
 - Multiple audio studios merged into one MKV as separate audio tracks.
 - External subtitles are ignored.
-- Embedded subtitles are removed with `mkvmerge --no-subtitles`.
+- Embedded subtitles are removed when a file is remuxed with added audio.
+- Files without matched audio use a fast move/rename path instead of slow remuxing.
 - Bonus, OVA, OAD, specials, and extras go to `Season 00`.
 - Season folders like `Title S01`, `Title Season 1`, `Title/Season 1` are supported.
 - Audio folders like `Sounds`, `Sound`, `audio`, `DUB`, `voice`, `озвучка`, `звук`, `аудио` are supported.
@@ -119,8 +120,8 @@ Work folder/
 
 `MERGE` asks what to do with original video files:
 
+- `m` / move: default. Files without added audio are moved into the Jellyfin output path; files with added audio are remuxed and their source video is moved to `Originals/`.
 - `k` / keep: keep source files.
-- `m` / move: move source videos to `Originals/`.
 - `d` / delete: delete source videos after a successful merge.
 
 Use `DRY RUN` before `MERGE`. It shows every video, matched audio tracks, ignored subtitles, and output path.
