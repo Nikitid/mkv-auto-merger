@@ -1,34 +1,38 @@
 # MKV Auto Merger
 
-Prepare anime and TV series folders from trackers for Jellyfin.
+[English](README.en.md)
 
-The script scans messy release folders, finds video files, matches external dubbed audio from one or more studios, and writes a Jellyfin-friendly structure:
+[![Лицензия: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Проверки](https://github.com/Nikitid/mkv-auto-merger/actions/workflows/lint.yml/badge.svg)](https://github.com/Nikitid/mkv-auto-merger/actions/workflows/lint.yml)
 
-```text
-Title/
-  Season 01/
-    Title - S01E01.mkv
-  Season 00/
-    Title - S00E01.mkv
-```
+Консольный инструмент для подготовки папок с сериалами и аниме к импорту в
+Jellyfin. Скрипт находит видео, сопоставляет внешние аудиодорожки, при
+необходимости выполняет remux через `mkvmerge` и создает структуру
+`Season XX`.
 
-## Features
+## Состояние
 
-- Recursive scan of tracker-style folders.
-- Multiple audio studios merged into one MKV as separate audio tracks.
-- External subtitles are ignored.
-- Embedded subtitles are removed when a file is remuxed with added audio.
-- Files without matched audio use a fast move/rename path instead of slow remuxing.
-- Bonus, OVA, OAD, specials, and extras go to `Season 00`.
-- Season folders like `Title S01`, `Title Season 1`, `Title/Season 1` are supported.
-- Audio folders like `Sounds`, `Sound`, `audio`, `DUB`, `voice`, `озвучка`, `звук`, `аудио` are supported.
-- Dry-run mode shows the full plan before files are changed.
+Проект используется как самостоятельный скрипт. Актуальная версия пакета —
+`0.1.0`. Перед операциями с файлами рекомендуется сначала запускать сухой
+прогон.
 
-## Requirements
+## Возможности
 
-- Python 3.12+
-- `mkvmerge` from MKVToolNix
-- Optional development tools: `pytest`, `ruff`, `shellcheck`, `shfmt`
+- рекурсивный поиск видео в папках раздач;
+- добавление нескольких внешних аудиодорожек;
+- поддержка папок `Sounds`, `Sound`, `audio`, `DUB`, `voice`, `озвучка`,
+  `звук` и `аудио`;
+- перенос без remux, если дополнительное аудио не найдено;
+- распознавание сезонов, бонусов, OVA, OAD и специальных выпусков;
+- удаление встроенных субтитров при remux; внешние субтитры не добавляются;
+- переименование в формат Jellyfin `SxxExx`;
+- предварительный план без изменения файлов.
+
+## Требования
+
+- Python 3.12 или новее;
+- `mkvmerge` из MKVToolNix;
+- для разработки: `pytest`, `ruff`, `shellcheck` и `shfmt`.
 
 macOS:
 
@@ -43,31 +47,17 @@ sudo apt-get update
 sudo apt-get install -y mkvtoolnix shellcheck shfmt python3 python3-venv
 ```
 
-## Quick Use From GitHub
-
-Clone and run in one line:
+## Установка
 
 ```bash
-git clone https://github.com/Nikitid/mkv-auto-merger.git && python3 mkv-auto-merger/scripts/mkv-auto-merge.py /path/to/work-folder
+git clone https://github.com/Nikitid/mkv-auto-merger.git
+cd mkv-auto-merger
+python3 scripts/mkv-auto-merge.py /path/to/work-folder
 ```
 
-Run directly from the raw script URL:
+## Использование
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/Nikitid/mkv-auto-merger/main/scripts/mkv-auto-merge.py -o /tmp/mkv-auto-merge.py && python3 /tmp/mkv-auto-merge.py /path/to/work-folder
-```
-
-Inside the menu, use this order:
-
-```text
-4) DRY RUN
-1) MERGE
-6) MOVE TO LIBRARY
-```
-
-## Expected Folder Layout
-
-Minimum:
+Минимальная исходная структура:
 
 ```text
 Work folder/
@@ -77,22 +67,7 @@ Work folder/
     Bonus/01.mkv
 ```
 
-Also supported:
-
-```text
-Work folder/
-  Title S01/
-    [Tracker] Title S01E01 1080p.mkv
-    DUB/AniLibria/Title 01.flac
-    Озвучка/StudioBand/01.dts
-    Specials/OVA 01.mkv
-
-  Title S02/
-    01.mkv
-    Sounds/AniLibria/01.mka
-```
-
-Output:
+Ожидаемый результат:
 
 ```text
 Work folder/
@@ -101,34 +76,35 @@ Work folder/
       Title - S00E01.mkv
     Season 01/
       Title - S01E01.mkv
-    Season 02/
-      Title - S02E01.mkv
 ```
 
-## Menu
+Рекомендуемый порядок действий в меню:
 
 ```text
-1) MERGE: Собрать серии
-2) RENAME: Jellyfin SxxExx
-3) CLEANUP: Удалить пустые папки
-4) DRY RUN: План работ
-5) FINAL CONSOLIDATE: Склеить сезоны
-6) MOVE TO LIBRARY: Перенести в /data/anime
-7) DELETE EXTERNAL SUBS: удалить .ass/.srt/.ssa
-8) EXIT: Выход
+4) DRY RUN
+1) MERGE
+6) MOVE TO LIBRARY
 ```
 
-`MERGE` asks what to do with original video files:
+Основные пункты меню:
 
-- `m` / move: default. Files without added audio are moved into the Jellyfin output path; files with added audio are remuxed and their source video is moved to `Originals/`.
-- `k` / keep: keep source files.
-- `d` / delete: delete source videos after a successful merge.
+- `MERGE` — собрать серии и добавить найденные аудиодорожки;
+- `RENAME` — привести имена к формату Jellyfin;
+- `CLEANUP` — удалить пустые каталоги;
+- `FINAL CONSOLIDATE` — объединить найденные сезоны;
+- `MOVE TO LIBRARY` — перенести результат в настроенную медиатеку;
+- `DELETE EXTERNAL SUBS` — удалить внешние файлы субтитров.
 
-Use `DRY RUN` before `MERGE`. It shows every video, matched audio tracks, ignored subtitles, and output path.
+При `MERGE` доступны три режима для исходного видео:
 
-## Development
+- `m` — переместить; режим по умолчанию;
+- `k` — оставить исходные файлы;
+- `d` — удалить исходное видео после успешной обработки.
 
-The script itself has no Python runtime dependencies. Install dev tools only when you want to run tests and lint locally:
+Проверьте план `DRY RUN` и резервную копию перед режимами, которые перемещают
+или удаляют файлы.
+
+## Разработка
 
 ```bash
 python3 -m venv .venv
@@ -138,19 +114,11 @@ make lint
 make test
 ```
 
-## GitHub Publishing
+## Безопасность данных
 
-From this project directory:
+Инструмент работает с пользовательской медиатекой и может перемещать или
+удалять исходные файлы. Подробности приведены в [SECURITY.md](SECURITY.md).
 
-```bash
-git init
-git add .
-git commit -m "Initial release"
-git branch -M main
-git remote add origin https://github.com/Nikitid/mkv-auto-merger.git
-git push -u origin main
-```
+## Лицензия
 
-## License
-
-Released under the MIT license.
+[MIT](LICENSE)
