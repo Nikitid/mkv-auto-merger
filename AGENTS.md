@@ -7,10 +7,9 @@ files and remuxing MKV containers for Jellyfin.
 
 ## Start of Work
 
-- The application is one 616-line script, `scripts/mkv-auto-merge.py`. Read the
-  section you need rather than the whole file; there is no generated index here
-  because the file is small enough not to need one.
-- Do not read `CHANGELOG.md` for orientation; it is release history.
+- Read `docs/MAP.md` first. The application is one 616-line script,
+  `scripts/mkv-auto-merge.py`: read the section you need rather than the whole
+  file. There is no generated index because the file does not warrant one.
 - Run `git status -sb` and preserve unrelated changes.
 
 ## Structure

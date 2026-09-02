@@ -115,7 +115,8 @@ make test
 ## Data safety
 
 The utility works with a media library and can move or delete source files.
-See [SECURITY.md](SECURITY.md).
+Check the paths before a run and keep a backup: it cannot undo a move or a
+deletion.
 
 ## License
 
