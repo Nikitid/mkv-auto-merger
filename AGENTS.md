@@ -5,6 +5,14 @@
 This repository contains a Python command-line utility for reorganizing media
 files and remuxing MKV containers for Jellyfin.
 
+## Start of Work
+
+- The application is one 616-line script, `scripts/mkv-auto-merge.py`. Read the
+  section you need rather than the whole file; there is no generated index here
+  because the file is small enough not to need one.
+- Do not read `CHANGELOG.md` for orientation; it is release history.
+- Run `git status -sb` and preserve unrelated changes.
+
 ## Structure
 
 - `scripts/mkv-auto-merge.py` — application entry point.
