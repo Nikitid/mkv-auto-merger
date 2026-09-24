@@ -34,7 +34,7 @@ so those paths get the tests.
 
 | file | for |
 | --- | --- |
-| `AGENTS.md` | the rules of working here |
 | `docs/MAP.md` | this file |
-| `README.md` | operator-facing, Russian |
-| `README.en.md` | the English version |
+| `docs/DEVELOPMENT.md` | setup, checks and releasing |
+| `README.md` | user-facing, English |
+| `README.ru.md` | the Russian version |

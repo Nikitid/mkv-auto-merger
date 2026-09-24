@@ -46,6 +46,9 @@ main() {
     fail "shell scripts are not formatted; run: make format"
   fi
 
+  log "checking README layout"
+  ./scripts/check-readme.sh
+
   if command -v python3 >/dev/null 2>&1; then
     log "checking Python syntax"
     python3 -m compileall -q scripts tests
