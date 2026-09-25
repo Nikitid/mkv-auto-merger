@@ -18,3 +18,7 @@ Makefile text eol=lf
 *.pdf binary
 *.zip binary
 *.gz binary
+
+# Shared scripts vendored from repo-templates: kept out of the language stats.
+scripts/check-readme.sh linguist-vendored
+scripts/release-notes.sh linguist-vendored
